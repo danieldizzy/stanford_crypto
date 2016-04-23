@@ -57,6 +57,8 @@ class Week_2(TestBase):
 
 
 class Test_AES(unittest.TestCase):
+    """Test cases lifted from http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf
+    where possible."""
 
     def test_load_state(self):
         i = range(0, 16)
@@ -68,3 +70,18 @@ class Test_AES(unittest.TestCase):
         i = range(0, 16)
         o = aes.output_state(aes.load_state(i))
         self.assertEqual(i, o)
+
+    def test_poly_to_bin(self):
+        x1 = (5,3,2,0)
+        self.assertEqual(0b101101, aes.poly_to_bin(x1))
+
+    def test_bin_to_poly(self):
+        x = 0b101101
+        self.assertEqual([5, 3, 2, 0], aes.bin_to_poly(x))
+
+    def test_add_binary_poly(self):
+        # powers of 2, sec 4.1
+        x1 = (6,4,2,1,0)
+        x2 = (7,1,0)
+        self.assertEqual([7,6,4,2], aes.add_binary_poly(x1, x2))
+
