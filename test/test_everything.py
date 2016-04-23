@@ -6,6 +6,7 @@ import unittest
 from cStringIO import StringIO
 import sys
 import os
+import week_2.aes as aes
 
 class TestBase(unittest.TestCase):
 
@@ -53,3 +54,17 @@ class Week_2(TestBase):
     def test_bonus(self):
         import week_2.bonus
         week_2.bonus.main()
+
+
+class Test_AES(unittest.TestCase):
+
+    def test_load_state(self):
+        i = range(0, 16)
+        expected = [[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15]]
+        self.assertEqual(4, expected[0][1])
+        self.assertEqual(expected, aes.load_state(i))
+
+    def test_output_state(self):
+        i = range(0, 16)
+        o = aes.output_state(aes.load_state(i))
+        self.assertEqual(i, o)

@@ -18,8 +18,18 @@ fine to use the built-in AES functions, we ask that as a learning
 experience you implement CBC and CTR modes yourself.
 """
 
+# PKCS#5 padding is defined for 8-byte block sizes.  The number of
+# bytes to be padded equals to "8 - numberOfBytes(clearText) mod
+# 8". So 1 to 8 bytes will be padded to the clear text data depending
+# on the length of the clear text data.  All padded bytes have the
+# same value - the number of bytes padded.
+
 import math
 from lib.helpers import *
+
+
+
+###################
 
 def bonus():
     pass
@@ -27,6 +37,7 @@ def bonus():
 def main():
     # q1 - CBC
     key = "140b41b22a29beb4061bda66b6747e14"
+    print len(key) * 8
     ct = "4ca00ff4c898d61e1edbf1800618fb2828a226d160dad07883d04e008a7897ee2e4b7465d5290d0c0e6c6822236e1daafb94ffe0c5da05d9476be028ad7c1d81"
 
     # q2 - CBC

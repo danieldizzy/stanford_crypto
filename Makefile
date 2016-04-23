@@ -3,6 +3,10 @@
 test: clean
 	python -m unittest discover
 
+# AES tests
+a:
+	python -m unittest test.test_everything.Test_AES
+
 clean:
 	find . -name '*.pyc' -exec rm -f {} +
 
