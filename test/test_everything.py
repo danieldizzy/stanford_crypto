@@ -43,3 +43,9 @@ class Week_1(TestBase):
 
     def test_birthday_paradox_8_days(self):
         import week_1.misc.birthday_paradox_8_days
+
+class Week_2(TestBase):
+
+    def test_assignment(self):
+        import week_2.assignment
+        week_2.assignment.main()
