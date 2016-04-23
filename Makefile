@@ -14,5 +14,7 @@ runall: test
 	python -m week_1.assignment.bonus
 	echo '----------------------------------'
 	python -m week_2.assignment
+	echo '----------------------------------'
+	python -m week_2.bonus
 
 .PHONY: test clean

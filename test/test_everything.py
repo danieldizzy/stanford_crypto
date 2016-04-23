@@ -49,3 +49,7 @@ class Week_2(TestBase):
     def test_assignment(self):
         import week_2.assignment
         week_2.assignment.main()
+
+    def test_bonus(self):
+        import week_2.bonus
+        week_2.bonus.main()
