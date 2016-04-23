@@ -1,4 +1,4 @@
-
+.DEFAULT_GOAL := test
 
 test: clean
 	python -m unittest discover

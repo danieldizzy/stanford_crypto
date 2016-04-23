@@ -40,16 +40,9 @@ $ python -m week_1.assignment.bonus
 ## Tests
 
 There are some sanity check unit test checks that exec the modules in
-`test`:
+`test`, run them with `$ make test` or just `$ make`, or `$ python -m
+unittest discover` if you're not into the whole brevity
+thing[.](https://www.youtube.com/watch?v=Be7Og9Gc_KY)
 
-```
-$ make test
-```
-
-or
-
-```
-python -m unittest discover
-```
 
 These are not real tests, but they ensure that things work.
