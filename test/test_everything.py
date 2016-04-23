@@ -85,3 +85,15 @@ class Test_AES(unittest.TestCase):
         x2 = (7,1,0)
         self.assertEqual([7,6,4,2], aes.add_binary_poly(x1, x2))
 
+    def test_get_subbytes_single_result(self):
+        # page 16
+        s = 0x53
+        self.assertEqual(0xed, aes.get_subbytes_transformation(s))
+
+    def test_do_state_subbytes_transformation(self):
+        state = aes.load_state(range(0, 16))
+        self.assertEqual(0, state[0][0])
+        self.assertEqual(4, state[0][1])
+        transformed = aes.subbyte_transform_state(state)
+        self.assertEqual(transformed[0][0], 0x63)
+        self.assertEqual(transformed[0][1], 0xf2)
