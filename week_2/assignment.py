@@ -76,6 +76,14 @@ log(total_years) = log(t) - log(seconds_per_year)
     print 'double check:'
     print 'will take {0} years'.format(10 ** log10years)
 
+    # check 2:
+    length = (2 ** 128) / \
+             (10 ** 9) / \
+             (10 ** 12 / 200) / \
+             (60 * 60 * 24 * 365)
+    print 'will take {0} years'.format(length)
+
+
 def question_4():
     print '\nQ4:'
     def print_xor(zero_64, one_32_zero_32):
