@@ -1,4 +1,9 @@
-test:
+
+
+test: clean
 	python -m unittest discover
 
-.PHONY: test
+clean:
+	find . -name '*.pyc' -exec rm -f {} +
+
+.PHONY: test clean

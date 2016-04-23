@@ -11,19 +11,39 @@ you.
 
 Reddit: https://www.reddit.com/r/Stanfordcrypto/
 
-## Code
+## Running the code
 
-Each assignment/project/whatever is a regular python module.
+Each assignment/project/whatever is a python module (file).  In some
+cases, you can run it directly:
 
 ```
-python path/to/assignment.py
+$ python path/to/assignment.py
 ```
+
+In some cases, running it as a file will give you errors:
+
+```
+$ python week_1/assignment/bonus.py
+Traceback (most recent call last):
+  File "week_1/assignment/bonus.py", line 12, in <module>
+    from lib.helpers import *
+ImportError: No module named lib.helpers
+```
+
+This is because some helpers are pulled into a separate library.  Run
+these assignments from the project root dir as a module instead:
+
+```
+$ python -m week_1.assignment.bonus
+```
+
+## Tests
 
 There are some sanity check unit test checks that exec the modules in
 `test`:
 
 ```
-make test
+$ make test
 ```
 
 or

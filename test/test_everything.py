@@ -27,11 +27,13 @@ class TestBase(unittest.TestCase):
         """Lazy shorthand to print results."""
         self.printstdout = True
 
-class Week_1(TestBase):
+class Helpers(TestBase):
 
     def test_helpers(self):
-        import week_1.assignment.helpers
-        week_1.assignment.helpers.main()
+        import lib.helpers
+        lib.helpers.main()
+
+class Week_1(TestBase):
 
     def test_q1(self):
         import week_1.assignment.q7

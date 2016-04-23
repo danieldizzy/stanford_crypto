@@ -9,7 +9,7 @@ Hint: XOR the ciphertexts together, and consider what happens when a space is XO
 import sys
 import itertools
 
-from helpers import *
+from lib.helpers import *
 
 # ==========
 
