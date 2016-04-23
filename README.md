@@ -10,3 +10,26 @@ could be done better, please open an issue or create a PR ...  Thank
 you.
 
 Reddit: https://www.reddit.com/r/Stanfordcrypto/
+
+## Code
+
+Each assignment/project/whatever is a regular python module.
+
+```
+python path/to/assignment.py
+```
+
+There are some sanity check unit test checks that exec the modules in
+`test`:
+
+```
+make test
+```
+
+or
+
+```
+python -m unittest discover
+```
+
+These are not real tests, but they ensure that things work.

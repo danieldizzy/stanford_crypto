@@ -42,10 +42,9 @@ def xor_hex_strings(lhs, rhs):
     lhs_ia = hexstring_to_int_array(lhs[0:minlen])
     rhs_ia = hexstring_to_int_array(rhs[0:minlen])
     return map(lambda x: x[0] ^ x[1], zip(lhs_ia, rhs_ia))
-    
-if __name__ == '__main__':
-    # Misc manual tests - should convert to testunit test cases.
-    
+
+def main():
+    # misc manual tests
     print hexstring_to_int_array('ffaa01')
     print map(len, ['a','b'])
 
@@ -65,6 +64,9 @@ if __name__ == '__main__':
     print x
     print int_array_to_string(x)
     
+if __name__ == '__main__':
+    main()
+
 # TODO - add test cases
 
 # ==================
