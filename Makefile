@@ -6,4 +6,8 @@ test: clean
 clean:
 	find . -name '*.pyc' -exec rm -f {} +
 
+runall: test
+	echo 'ASSIGNMENTS'
+	python -m week_2.assignment
+
 .PHONY: test clean
