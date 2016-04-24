@@ -157,9 +157,4 @@ def shift_single_row(r, left_shift_count):
     return r
 
 def shift_rows(state):
-    return [
-        state[0],
-        shift_single_row(state[1], 1),
-        shift_single_row(state[2], 2),
-        shift_single_row(state[3], 3)
-    ]
+    return [shift_single_row(state[i], i) for i in range(0, 4)]
