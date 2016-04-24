@@ -109,14 +109,17 @@ def _multiply_poly(a, b):
     powers = [x + y for (x, y) in itertools.product(a,b)]
     return bin_to_poly(poly_to_bin(powers))
 
-def multiply_poly_in_galois_field_256(a, b):
-    t = _multiply_poly(bin_to_poly(a), bin_to_poly(b))
+def multiply_poly_in_galois_field_256(bin_a, bin_b):
+    t = _multiply_poly(bin_to_poly(bin_a), bin_to_poly(bin_b))
     divisor = (8, 4, 3, 1, 0)
     d, remainder = poly_divmod(t, divisor)
     return remainder
 
 def bigdot_multiply(a, b):
     return multiply_poly_in_galois_field_256(a, b)
+
+def xtime(bin_a):
+    return poly_to_bin(multiply_poly_in_galois_field_256(bin_a, 0x02))
 
 # 5.1.1 SubBytes()Transformation
 def get_subbytes_transformation(s):
@@ -145,3 +148,18 @@ def subbyte_transform_state(state):
     vec = output_state(state)
     tx = map(get_subbytes_transformation, vec)
     return load_state(tx)
+
+def shift_single_row(r, left_shift_count):
+    def shift_once(r):
+        return [r[1], r[2], r[3], r[0]]
+    for i in range(0, left_shift_count):
+        r = shift_once(r)
+    return r
+
+def shift_rows(state):
+    return [
+        state[0],
+        shift_single_row(state[1], 1),
+        shift_single_row(state[2], 2),
+        shift_single_row(state[3], 3)
+    ]

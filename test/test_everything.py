@@ -63,7 +63,6 @@ class Test_AES(unittest.TestCase):
     def test_load_state(self):
         i = range(0, 16)
         expected = [[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15]]
-        self.assertEqual(4, expected[0][1])
         self.assertEqual(expected, aes.load_state(i))
 
     def test_output_state(self):
@@ -121,11 +120,21 @@ class Test_AES(unittest.TestCase):
 
     def test_bigdot_multiply_polys(self):
         # sec 4.2 Multiplication
-        a = 0x57
-        b = 0x83
-        actual = aes.bigdot_multiply(a, b)
+        actual = aes.bigdot_multiply(0x57, 0x83)
         expected = aes.bin_to_poly(0xc1)
         self.assertEqual(expected, actual)
+
+        # pg 12
+        actual = aes.bigdot_multiply(0x57, 0x13)
+        expected = aes.bin_to_poly(0xfe)
+        self.assertEqual(expected, actual)
+
+    def test_xtime(self):
+        # page 12
+        self.assertEqual(aes.xtime(0x57), 0xae)
+        self.assertEqual(aes.xtime(0xae), 0x47)
+        self.assertEqual(aes.xtime(0x47), 0x8e)
+        self.assertEqual(aes.xtime(0x8e), 0x07)
 
     def test_get_subbytes_single_result(self):
         # page 16
@@ -140,3 +149,14 @@ class Test_AES(unittest.TestCase):
         self.assertEqual(transformed[0][0], 0x63)
         self.assertEqual(transformed[0][1], 0xf2)
 
+    def test_shiftrows(self):
+        i = range(0, 16)
+        state = aes.load_state(i)  # creates [[0,4,8,12],[1,5, ...], ...]
+        actual = aes.shift_rows(state)
+        expected = [
+            [0,4,8,12],
+            [5,9,13,1],
+            [10,14,2,6],
+            [15,3,7,11]
+        ]
+        self.assertEqual(actual, expected)
