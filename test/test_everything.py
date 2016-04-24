@@ -75,6 +75,10 @@ class Test_AES(unittest.TestCase):
         x1 = (5,3,2,0)
         self.assertEqual(0b101101, aes.poly_to_bin(x1))
 
+    def test_poly_to_bin_2(self):
+        x = (7,6,0)
+        self.assertEqual(0xc1, aes.poly_to_bin(x))
+
     def test_bin_to_poly(self):
         x = 0b101101
         self.assertEqual([5, 3, 2, 0], aes.bin_to_poly(x))
@@ -84,6 +88,44 @@ class Test_AES(unittest.TestCase):
         x1 = (6,4,2,1,0)
         x2 = (7,1,0)
         self.assertEqual([7,6,4,2], aes.add_binary_poly(x1, x2))
+
+    def test__multiply_poly(self):
+        # Top of page 11
+        a = (6, 4, 2, 1, 0)
+        b = (7, 1, 0)
+        expected = [13, 11, 9, 8, 6, 5, 4, 3, 0]
+        self.assertEqual(expected, aes._multiply_poly(a, b))
+
+    def test_poly_from_string(self):
+        self.assertEqual(aes.poly_from_string('x^7 + x^5 + x^2 + x^0'), [7,5,2,0])
+        self.assertEqual(aes.poly_from_string('x^7+x^5+x^2+x^0'), [7,5,2,0])
+        self.assertEqual(aes.poly_from_string('x+1'), [1,0])
+        
+    def test_poly_divmod(self):
+        
+        data = (
+            ('1', 'x^1', '', '1'),
+            ('x', 'x', '1', ''),
+            ('x^3 + x', 'x', 'x^2 + 1', ''),
+            # Example from page 11:
+            ('x^13 + x^11 + x^9 + x^8 + x^6 + x^5 + x^4 + x^3 + 1',
+             'x^8 + x^4 + x^3 + x + 1',
+             'x^5 + x^3',
+             'x^7 + x^6 + 1'),
+        )
+        for (n, d, exp_q, exp_r) in data:
+            n, d, exp_q, exp_r = map(aes.poly_from_string, (n, d, exp_q, exp_r))
+            actual_q, actual_rem = aes.poly_divmod(n, d)
+            self.assertEqual(exp_q, actual_q)
+            self.assertEqual(exp_r, actual_rem)
+
+    def test_bigdot_multiply_polys(self):
+        # sec 4.2 Multiplication
+        a = 0x57
+        b = 0x83
+        actual = aes.bigdot_multiply(a, b)
+        expected = aes.bin_to_poly(0xc1)
+        self.assertEqual(expected, actual)
 
     def test_get_subbytes_single_result(self):
         # page 16
@@ -97,3 +139,4 @@ class Test_AES(unittest.TestCase):
         transformed = aes.subbyte_transform_state(state)
         self.assertEqual(transformed[0][0], 0x63)
         self.assertEqual(transformed[0][1], 0xf2)
+

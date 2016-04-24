@@ -1,3 +1,5 @@
+import itertools
+import re
 
 ###################
 # AES functions
@@ -21,6 +23,10 @@ def output_state(state):
     return ret
 
 def poly_to_bin(poly, initializer = 0x00):
+    """Create a binary number from an iterable of exponents.
+
+    Note that if the same exponent appears twice, it is
+    xored against itself and removed from the returned value."""
     return reduce(lambda h, val: h ^ (1 << val), poly, initializer)
 
 def bin_to_poly(bin):
@@ -38,6 +44,79 @@ def bin_to_poly(bin):
 def add_binary_poly(lhs, rhs):
     total = poly_to_bin(rhs, poly_to_bin(lhs))
     return bin_to_poly(total)
+
+# syntactic sugar
+def poly_from_string(s):
+    """Helper, turn, eg, 'x^2 + 1' into [2, 0] (exponents)"""
+    if s == '':
+        return []
+
+    def clean_term(x):
+        tmp = re.sub(r' ', '', x)
+        if tmp == '1':
+            tmp = 'x^0'
+        if tmp == 'x':
+            tmp = 'x^1'
+        if not '^' in tmp:
+            raise ValueError('missing carat in poly term {0}'.format(x))
+        tmp = re.sub(r'.*?\^', '', tmp)
+        return int(tmp)
+
+    d = s.split('+')    
+    ret = map(clean_term, d)
+    return ret
+
+# sec 4.2 Multiplication
+def poly_divmod(numerator, denom):
+    """returns (quotient, remainder) of polynomials of the form
+    sum(i=0..n)x^i.  Note all coefficients are 1.
+
+    Args:
+      numerator, denom: sets of ints, powers of x.
+      e.g., (5, 3, 1, 0) = x^5 + x^3 + x + 1
+    """
+    # print 'divmod of {0} / {1}'.format(numerator, denom)
+    quotient = []
+    remainder = []
+    left = numerator
+    maxdenompower = max(denom)
+    while len(left) > 0:
+        # print 'left: {0} with len {1}'.format(left, len(left))
+        if max(left) < maxdenompower:
+            for e in left:
+                remainder.append(e)
+            left = []
+        else:
+            # the next term to add to the quotient is the
+            # max. power in what's left divided by the maxdenompower
+            addexp = max(left) - maxdenompower
+            quotient = add_binary_poly(quotient, [addexp])
+            subtractpoly = map(lambda x: x + addexp, denom)
+
+            # Odd: subtracting binary poly in mod 2 is the same as
+            # xoring (adding) ?
+            left = add_binary_poly(left, subtractpoly)
+    return (quotient, remainder)
+        
+    
+def _multiply_poly(a, b):
+    """Multiplies binary polys (ref page 11)
+
+    First, creates all pairs of exponents, then sums them.
+    By converting the resulting poly to a bin, like
+    exponent values cancel themselves out.  It's then converted
+    back to a bin."""
+    powers = [x + y for (x, y) in itertools.product(a,b)]
+    return bin_to_poly(poly_to_bin(powers))
+
+def multiply_poly_in_galois_field_256(a, b):
+    t = _multiply_poly(bin_to_poly(a), bin_to_poly(b))
+    divisor = (8, 4, 3, 1, 0)
+    d, remainder = poly_divmod(t, divisor)
+    return remainder
+
+def bigdot_multiply(a, b):
+    return multiply_poly_in_galois_field_256(a, b)
 
 # 5.1.1 SubBytes()Transformation
 def get_subbytes_transformation(s):
