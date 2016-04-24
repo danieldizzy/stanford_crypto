@@ -95,14 +95,19 @@ class Test_AES(unittest.TestCase):
         expected = [13, 11, 9, 8, 6, 5, 4, 3, 0]
         self.assertEqual(expected, aes._multiply_poly(a, b))
 
+        # mult by x
+        a = [8]
+        b = [1]
+        self.assertEqual([9], aes._multiply_poly(a, b))
+
     def test_poly_from_string(self):
         self.assertEqual(aes.poly_from_string('x^7 + x^5 + x^2 + x^0'), [7,5,2,0])
         self.assertEqual(aes.poly_from_string('x^7+x^5+x^2+x^0'), [7,5,2,0])
         self.assertEqual(aes.poly_from_string('x+1'), [1,0])
-        
+
     def test_poly_divmod(self):
-        
         data = (
+            ('1', '1', '1', ''),
             ('1', 'x^1', '', '1'),
             ('x', 'x', '1', ''),
             ('x^3 + x', 'x', 'x^2 + 1', ''),
@@ -129,12 +134,23 @@ class Test_AES(unittest.TestCase):
         expected = aes.bin_to_poly(0xfe)
         self.assertEqual(expected, actual)
 
+        # poly multiply by x results in a shift and the top bit is
+        # chopped off due to modulo m(x) (which is 'x^8+x^4+x^3+x+1')
+        actual = aes.bigdot_multiply(0x80, 0x02)
+        expected = [4, 3, 1, 0]
+        self.assertEqual(expected, actual)
+
+
     def test_xtime(self):
         # page 12
         self.assertEqual(aes.xtime(0x57), 0xae)
         self.assertEqual(aes.xtime(0xae), 0x47)
         self.assertEqual(aes.xtime(0x47), 0x8e)
         self.assertEqual(aes.xtime(0x8e), 0x07)
+
+        # Note the top bit has been chopped off here:
+        self.assertEqual(aes.xtime(0x80), 0b00011011)
+        # 0x80 = 0b 1000 0000.  Multiply by x
 
     def test_get_subbytes_single_result(self):
         # page 16
@@ -160,3 +176,33 @@ class Test_AES(unittest.TestCase):
             [15,3,7,11]
         ]
         self.assertEqual(actual, expected)
+
+    def test_mix_single_column(self):
+        # c = [1,1,1,1]
+        # actual = aes.mix_single_column(c)
+        # self.assertEqual([1,1,1,1], actual)
+
+        test_cases = [
+            # Test vectors from
+            # https://en.wikipedia.org/wiki/Rijndael_mix_columns:
+            [[219, 19, 83, 69], [142, 77, 161, 188]],
+            [[242, 10, 34, 92], [159, 220, 88, 157]],
+            [[1, 1, 1, 1], [1, 1, 1, 1]],
+            [[198, 198, 198, 198], [198, 198, 198, 198]],
+            [[212, 212, 212, 213], [213, 213, 215, 214]],
+            [[45, 38, 49, 76], [77, 126, 189, 248]],
+
+            # from www.angelfire.com/biz7/atleast/mix_columns.pdf:
+            # [[0xd4, 0xbf, 0x5d, 0x30], [0x04, 0x66, 0x81, 0xe5]]
+        ]
+
+        for t, expected_output in test_cases:
+            actual = aes.mix_single_column(t)
+            self.assertEqual(expected_output, actual)
+
+    def test_GF_256_byte_multi_should_equal_bigdot_multiply(self):
+        for i in [219, 242, 1, 198, 212, 45]:
+            for j in [2, 3]:
+                g = aes.GF_256_byte_mult(j, i)
+                b = aes.poly_to_bin(aes.bigdot_multiply(j, i))
+                self.assertEqual(g, b)

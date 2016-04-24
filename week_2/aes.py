@@ -82,7 +82,7 @@ def poly_divmod(numerator, denom):
     maxdenompower = max(denom)
     while len(left) > 0:
         # print 'left: {0} with len {1}'.format(left, len(left))
-        if max(left) < maxdenompower:
+        if maxdenompower > max(left):
             for e in left:
                 remainder.append(e)
             left = []
@@ -97,8 +97,8 @@ def poly_divmod(numerator, denom):
             # xoring (adding) ?
             left = add_binary_poly(left, subtractpoly)
     return (quotient, remainder)
-        
-    
+
+
 def _multiply_poly(a, b):
     """Multiplies binary polys (ref page 11)
 
@@ -115,11 +115,12 @@ def multiply_poly_in_galois_field_256(bin_a, bin_b):
     d, remainder = poly_divmod(t, divisor)
     return remainder
 
-def bigdot_multiply(a, b):
-    return multiply_poly_in_galois_field_256(a, b)
+def bigdot_multiply(bin_a, bin_b):
+    return multiply_poly_in_galois_field_256(bin_a, bin_b)
 
 def xtime(bin_a):
     return poly_to_bin(multiply_poly_in_galois_field_256(bin_a, 0x02))
+
 
 # 5.1.1 SubBytes()Transformation
 def get_subbytes_transformation(s):
@@ -158,3 +159,38 @@ def shift_single_row(r, left_shift_count):
 
 def shift_rows(state):
     return [shift_single_row(state[i], i) for i in range(0, 4)]
+
+# 5.1.3 MixColumns() Transformation
+
+def GF_256_byte_mult(bin_a, bin_b):
+    """Galois Field (256) Multiplication of two bytes."""
+    # ref https://en.wikipedia.org/wiki/Rijndael_mix_columns
+    p = 0
+    for counter in range(0, 8):
+        if bin_b & 1:
+            p ^= bin_a
+        hi_bit_set = (bin_a & 0x80 != 0)
+        # print 'curr val:  {0}'.format(bin_a)
+        bin_a <<= 1
+        # print 'shifted:   {0}'.format(bin_a)
+        (_, bin_a) = divmod(bin_a, (1 << 8))
+        # print 'remainder: {0}'.format(bin_a)
+        if hi_bit_set:
+            bin_a ^= 0x1b;  # x^8 + x^4 + x^3 + x + 1
+        bin_b >>= 1
+    return p
+
+def mix_single_column(c):
+    (s0, s1, s2, s3) = (c[0], c[1], c[2], c[3])
+
+    def dot(a, b):
+        # return GF_256_byte_mult(a, b)
+        return poly_to_bin(bigdot_multiply(a, b))
+
+    # using 'rn' = 's-prime-n'
+    r0 = dot(2, s0) ^ dot(3, s3) ^ s2         ^ s3
+    r1 = s0         ^ dot(2, s1) ^ dot(3, s2) ^ s3
+    r2 = s0         ^ s1         ^ dot(2, s2) ^ dot(3, s3)
+    r3 = dot(3, s0) ^ s1         ^ s2         ^ dot(2, s3)
+
+    return [r0, r1, r2, r3]
