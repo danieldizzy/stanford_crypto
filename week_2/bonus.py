@@ -27,7 +27,8 @@ experience you implement CBC and CTR modes yourself.
 import math
 from lib.helpers import *
 
-
+# TODO: complete this.  The AES implementation - still incomplete - is
+# in ./aes.py, with tests in test_everything.py.
 
 ###################
 
