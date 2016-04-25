@@ -241,3 +241,14 @@ class Test_AES(unittest.TestCase):
         expected_mixed = aes.transpose(transposed_mixed)
         self.assertEqual(aes.mix_columns(state), expected_mixed)
 
+    def test_expand_key(self):
+        # Test using data from
+        # A.1 Expansion of a 128-bit Cipher Key
+        # http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf
+        key = "2b7e151628aed2a6abf7158809cf4f3c"
+        round1  = "a0fafe1788542cb123a339392a6c7605"
+        round2  = "f2c295f27a96b9435935807a7359f67f"
+        round10 = "d014f9a8c9ee2589e13f0cc8b6630ca6"
+
+        self.assertEqual(key,     aes.expand_key(key, 0)[-1])
+        self.assertEqual(round1,  aes.expand_key(key, 1)[-1])

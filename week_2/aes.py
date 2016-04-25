@@ -199,3 +199,60 @@ def transpose(state):
 
 def mix_columns(state):
     return transpose(map(mix_single_column, transpose(state)))
+
+# 5.2 Key Expansion
+def expand_key(hex_key_string, number_of_rounds):
+    """SubWord() is a function that takes a four-byte input word and
+applies the S-box (Sec.  5.1.1, Fig.  7) to each of the four bytes to
+produce an output word.  The function RotWord() takes a word
+[a0,a1,a2,a3] as input, performs a cyclic permutation, and returns the
+word [a1,a2,a3,a0]. The round constant word array, Rcon[i], contains
+the values given by [xi-1,{00},{00},{00}], with x i-1 being powers of
+x (x is denoted as {02}) in the field GF(28), as discussed in Sec. 4.2
+(note that i starts at 1, not 0). From Fig.  11, it can be seen that
+the first Nk words of the expanded key are filled with the Cipher
+Key. Every following word, w[[i]], is equal to the XOR of the previous
+word, w[[i-1]], and the word Nk positions earlier, w[[i-Nk]].  For
+words in positions that are a multiple of Nk, a transformation is
+applied to w[[i-1]] prior to the XOR, followed by an XOR with a round
+constant, Rcon[i].  This transformation consists of a cyclic shift of
+the bytes in a word (RotWord()), followed by the application of a
+table lookup to all four bytes of the word (SubWord()).
+
+    Args:
+      hex_key_string, eg. "2b7e151628aed2a6abf7158809cf4f3c"
+      number_of_rounds of expansion to do
+    """
+    KEY_LENGTH = 32
+    WORD_LEN = 8
+
+    assert(len(hex_key_string) == KEY_LENGTH)
+    str_words = [hex_key_string[i:i+8] for i in range(0, KEY_LENGTH, 8)]
+
+    def str_to_int(str): return int(str, 16)
+
+    def to_bytes(hex_word_string):
+        assert(len(hex_word_string) == WORD_LEN)
+        return [str_to_int(hex_word_string[i:i+2]) for i in range(0, WORD_LEN, 2)]
+
+    def byte_array_to_hex_string(byte_array):
+        r = ''.join(map(lambda x: '{0:x}'.format(x).zfill(2), byte_array))
+        assert(len(r) == WORD_LEN)
+        return r
+
+    def word_array_to_hex_string(array_of_arrays_of_bytes):
+        return ''.join(map(byte_array_to_hex_string, array_of_arrays_of_bytes))
+
+    key = map(to_bytes, str_words)
+
+    result = [ list(key) ] # clone
+
+    for i in range(1, number_of_rounds + 1):
+        tmp = list(result[i - 1]) # clone
+
+        result.append(tmp)
+
+
+    ret = map(word_array_to_hex_string, result)
+    assert(len(ret[0]) == KEY_LENGTH)
+    return ret
