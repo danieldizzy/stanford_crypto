@@ -193,7 +193,7 @@ class Test_AES(unittest.TestCase):
             [[45, 38, 49, 76], [77, 126, 189, 248]],
 
             # from www.angelfire.com/biz7/atleast/mix_columns.pdf:
-            # [[0xd4, 0xbf, 0x5d, 0x30], [0x04, 0x66, 0x81, 0xe5]]
+            [[0xd4, 0xbf, 0x5d, 0x30], [0x04, 0x66, 0x81, 0xe5]]
         ]
 
         for t, expected_output in test_cases:

@@ -184,7 +184,6 @@ def mix_single_column(c):
     (s0, s1, s2, s3) = (c[0], c[1], c[2], c[3])
 
     def dot(a, b):
-        # return GF_256_byte_mult(a, b)
         return poly_to_bin(bigdot_multiply(a, b))
 
     # using 'rn' = 's-prime-n'
