@@ -206,3 +206,38 @@ class Test_AES(unittest.TestCase):
                 g = aes.GF_256_byte_mult(j, i)
                 b = aes.poly_to_bin(aes.bigdot_multiply(j, i))
                 self.assertEqual(g, b)
+
+    def test_transpose(self):
+        i = range(0, 16)
+        state = aes.load_state(i)  # creates [[0,4,8,12],[1,5, ...], ...]
+        t = aes.transpose(state)
+        expected = [
+            [0,1,2,3],
+            [4,5,6,7],
+            [8,9,10,11],
+            [12,13,14,15]
+        ]
+        self.assertEqual(t, expected)
+
+    def test_mix_columns(self):
+        # Using test vectors from
+        # https://en.wikipedia.org/wiki/Rijndael_mix_columns.
+        # These test vectors are rows, they have to be entered
+        # in the state table as columns.
+
+        transposed_state = [
+            [219, 19, 83, 69],
+            [242, 10, 34, 92],
+            [198, 198, 198, 198],
+            [212, 212, 212, 213]
+        ]
+        transposed_mixed = [
+            [142, 77, 161, 188],
+            [159, 220, 88, 157],
+            [198, 198, 198, 198],
+            [213, 213, 215, 214]
+        ]
+        state = aes.transpose(transposed_state)
+        expected_mixed = aes.transpose(transposed_mixed)
+        self.assertEqual(aes.mix_columns(state), expected_mixed)
+

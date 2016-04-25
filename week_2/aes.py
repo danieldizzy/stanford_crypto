@@ -193,3 +193,9 @@ def mix_single_column(c):
     r3 = dot(3, s0) ^ s1         ^ s2         ^ dot(2, s3)
 
     return [r0, r1, r2, r3]
+
+def transpose(state):
+    return map(list, zip(*state))
+
+def mix_columns(state):
+    return transpose(map(mix_single_column, transpose(state)))
