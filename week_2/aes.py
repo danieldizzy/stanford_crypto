@@ -188,7 +188,7 @@ def mix_single_column(c):
         return poly_to_bin(bigdot_multiply(a, b))
 
     # using 'rn' = 's-prime-n'
-    r0 = dot(2, s0) ^ dot(3, s3) ^ s2         ^ s3
+    r0 = dot(2, s0) ^ dot(3, s1) ^ s2         ^ s3
     r1 = s0         ^ dot(2, s1) ^ dot(3, s2) ^ s3
     r2 = s0         ^ s1         ^ dot(2, s2) ^ dot(3, s3)
     r3 = dot(3, s0) ^ s1         ^ s2         ^ dot(2, s3)
