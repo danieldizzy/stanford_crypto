@@ -5,7 +5,7 @@ test: clean
 
 # AES tests
 a:
-	python -m unittest test.test_everything.Test_AES.test_expand_key
+	python -m unittest test.test_everything.Test_AES
 
 clean:
 	find . -name '*.pyc' -exec rm -f {} +

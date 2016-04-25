@@ -151,6 +151,7 @@ def subbyte_transform_state(state):
     return load_state(tx)
 
 def shift_single_row(r, left_shift_count):
+    assert(len(r) == 4)
     def shift_once(r):
         return [r[1], r[2], r[3], r[0]]
     for i in range(0, left_shift_count):
@@ -226,9 +227,6 @@ table lookup to all four bytes of the word (SubWord()).
     KEY_LENGTH = 32
     WORD_LEN = 8
 
-    assert(len(hex_key_string) == KEY_LENGTH)
-    str_words = [hex_key_string[i:i+8] for i in range(0, KEY_LENGTH, 8)]
-
     def str_to_int(str): return int(str, 16)
 
     def to_bytes(hex_word_string):
@@ -243,16 +241,77 @@ table lookup to all four bytes of the word (SubWord()).
     def word_array_to_hex_string(array_of_arrays_of_bytes):
         return ''.join(map(byte_array_to_hex_string, array_of_arrays_of_bytes))
 
-    key = map(to_bytes, str_words)
+    def subword(array_of_bytes):
+        return map(get_subbytes_transformation, array_of_bytes)
 
-    result = [ list(key) ] # clone
+    def rotword(w):
+        return shift_single_row(w, 1)
 
-    for i in range(1, number_of_rounds + 1):
-        tmp = list(result[i - 1]) # clone
+    # algorithm from http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf,
+    # pg 20
+    """
+KeyExpansion(byte key[4*Nk], word w[Nb*(Nr+1)], Nk)
+begin
+i = 0
 
-        result.append(tmp)
+# part 1
+while (i < Nk)
+  w[i] = word(key[4*i], key[4*i+1], key[4*i+2], key[4*i+3])
+  i = i+1
+end while
 
+i = Nk
 
-    ret = map(word_array_to_hex_string, result)
-    assert(len(ret[0]) == KEY_LENGTH)
-    return ret
+# part 2
+while (i < Nb * (Nr+1))
+  temp = w[i-1]
+  if (i mod Nk = 0)
+    temp = SubWord(RotWord(temp)) xor Rcon[i/Nk]
+  else if (Nk > 6 and i mod Nk = 4)
+    temp = SubWord(temp)
+  end if
+  w[i] = w[i-Nk] xor temp
+  i = i + 1
+end while
+end
+"""
+
+    assert(len(hex_key_string) == KEY_LENGTH)
+    str_words = [hex_key_string[i:i+8] for i in range(0, KEY_LENGTH, 8)]
+
+    # part 1
+    w = map(to_bytes, str_words)
+
+    def report_temp(s, temp):
+        print '  {0}, temp = {1}'.format(s, byte_array_to_hex_string(temp))
+
+    # part 2
+    Nb = 4
+    Nk = 4
+    Nr = number_of_rounds
+    Rc = 0x01  # starting point
+    # print 'starting .........'
+    for i in range(Nk, Nb * (Nr + 1)):
+        # print 'start iter {0}:'.format(i)
+        temp = list(w[-1])
+        # report_temp('start', temp)
+        if (i % Nk == 0):
+            # print '  at Nk, recalc'
+            temp = rotword(temp)
+            # report_temp('after rotword', temp)
+            temp = subword(temp)
+            # report_temp('after subword', temp)
+            # print '  i/Nk = {0}'.format(i/Nk)
+            temp[0] ^= Rc
+            Rc = xtime(Rc)
+            # report_temp('after xor', temp)
+        elif (Nk > 6 and i % Nk == 4):
+            # print '  at Nk > 6 and i % Nk = 4, recalc'
+            temp = subword(temp)
+            # print '  after xor, temp = {0}'.format(temp)
+        new_entry = map(lambda x: x[0]^x[1], zip(w[i - Nk], temp))
+        # print '  got {0}'.format(new_entry)
+        w.append(new_entry)
+
+    grouped = [w[i:i+4] for i in range(0, len(w), Nk)]
+    return map(word_array_to_hex_string, grouped)

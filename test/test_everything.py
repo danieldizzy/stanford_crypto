@@ -245,10 +245,33 @@ class Test_AES(unittest.TestCase):
         # Test using data from
         # A.1 Expansion of a 128-bit Cipher Key
         # http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf
-        key = "2b7e151628aed2a6abf7158809cf4f3c"
+        key =     "2b7e151628aed2a6abf7158809cf4f3c"
         round1  = "a0fafe1788542cb123a339392a6c7605"
         round2  = "f2c295f27a96b9435935807a7359f67f"
         round10 = "d014f9a8c9ee2589e13f0cc8b6630ca6"
 
         self.assertEqual(key,     aes.expand_key(key, 0)[-1])
         self.assertEqual(round1,  aes.expand_key(key, 1)[-1])
+        self.assertEqual(round2,  aes.expand_key(key, 2)[-1])
+
+        firstwords = [
+            "a0fafe17",
+            "f2c295f2",
+            "3d80477d",
+            "ef44a541",
+            "d4d1c6f8",
+            "6d88a37a",
+            "4e54f70e",
+            "ead27321",
+            "ac7766f3",
+            "d014f9a8"
+        ]
+        for i in range(0, len(firstwords)):
+            expected = firstwords[i]
+            k = aes.expand_key(key, i+1)[-1]
+            actual = k[0:len(expected)]
+            self.assertEqual(str(i) + ':' + actual, str(i) + ':' + expected)
+
+        # Final full key.
+        self.assertEqual(round10, aes.expand_key(key, 10)[-1])
+
