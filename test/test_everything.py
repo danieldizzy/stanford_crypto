@@ -296,6 +296,15 @@ class Week_3(TestBase):
         )
         self.assertEqual(w3b.rev_hash(msg, 2, hashfunc), expected)
 
+    def test_rev_hash_do_not_save_rest_of_data(self):
+        def hashfunc(block):
+            return block
+
+        msg = bytearray('abcde')
+        b = lambda x: bytearray(x)  # shorthand
+        expected = (bytearray('abcde'), [])
+        self.assertEqual(w3b.rev_hash(msg, 2, hashfunc, False), expected)
+
     def test_pycrypto_sha256(self):
         expected = [0xba, 0x78, 0x16, 0xbf]  # Truncate the rest
         self.assertEqual(w3b.pycrypto_sha256('abc')[0:len(expected)], expected)

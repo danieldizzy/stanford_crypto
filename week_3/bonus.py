@@ -21,7 +21,7 @@ def blockize(s, block_size):
     # ba = bytearray(s)
     return map(lambda i: s[i:i+block_size], range(0, len(s), block_size))
 
-def rev_hash(s, block_size, hashfunc):
+def rev_hash(s, block_size, hashfunc, save_all_block_hashes = True):
     if not isinstance(s, bytearray):
         raise ValueError('must be bytearray')
 
@@ -39,11 +39,19 @@ def rev_hash(s, block_size, hashfunc):
         if hashes[-1] is not None:
             tmp.extend(hashes[-1])
         h = hashfunc(tmp)
-        hashes.append(h)
+
+        # Hacky.
+        if save_all_block_hashes:
+            hashes.append(h)
+        else:
+            hashes[0] = h
 
     tmp = bytearray(blocks[-1])
     tmp.extend(hashes[-1])
     hsh = hashfunc(tmp)
+
+    if not save_all_block_hashes:
+        return (hsh, [])
 
     ret = zip(blocks, hashes)
     ret.reverse()
