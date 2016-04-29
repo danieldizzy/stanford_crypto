@@ -286,12 +286,14 @@ class Week_3(TestBase):
         self.assertEqual(w3b.blockize('hello', 1), ['h', 'e', 'l', 'l', 'o'])
 
     def test_rev_hash(self):
+        self.p()
         def hashfunc(block):
             return block
 
-        msg = 'abcde'
+        msg = bytearray('abcde')
+        b = lambda x: bytearray(x)  # shorthand
         expected = (
-            'abcd', [ ['ab', 'cd'], ['cd', 'e'], ['e', ''] ]
+            b('abcde'), [ (b('ab'), b('cde')), (b('cd'), b('e')), (b('e'), None) ]
         )
         self.assertEqual(w3b.rev_hash(msg, 2, hashfunc), expected)
 
@@ -299,4 +301,6 @@ class Week_3(TestBase):
         # Add check for
         # wget https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=28 -O test.mp4
         
-        w3b.main()
+        # w3b.main()
+        # TODO add test file
+        pass

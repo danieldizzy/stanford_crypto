@@ -20,7 +20,10 @@ def blockize(s, block_size):
     # ba = bytearray(s)
     return map(lambda i: s[i:i+block_size], range(0, len(s), block_size))
 
-def rev_hash(s, block_size, hashfunc):
+def rev_hash(s, block_size, hashfunc, debug = False):
+    if not isinstance(s, bytearray):
+        raise ValueError('must be bytearray')
+
     # Given a string s, breaks it up into blocks of size block_size.
     # Then starting at the end (which may have size < block_size), it
     # applies a hash, and appends the output to the block before that,
@@ -28,20 +31,21 @@ def rev_hash(s, block_size, hashfunc):
     # (finalhash, [[block0, hash1], [block1, hash2], ... [blockn, None]])
     blocks = blockize(s, block_size)
     blocks.reverse()
-    ret = [[blocks[0], '']]
+    hashes = [None]
     for i in range(1, len(blocks)):
-        print '  hashing block {0} of {1}'.format(i, len(blocks))
-        b = ret[i-1]
-        tmp = b[0]
-        tmp.extend(b[1])
+        if debug:
+            print '  hashing block {0} of {1}'.format(i, len(blocks))
+        tmp = bytearray(blocks[i - 1])
+        if hashes[-1] is not None:
+            tmp.extend(hashes[-1])
         h = hashfunc(tmp)
-        ret.append([blocks[i], tmp])
+        hashes.append(h)
 
-    b = ret[-1]
-    tmp = b[0]
-    tmp.extend(b[1])
+    tmp = bytearray(blocks[-1])
+    tmp.extend(hashes[-1])
     hsh = hashfunc(tmp)
 
+    ret = zip(blocks, hashes)
     ret.reverse()
     return (hsh, ret)
              
