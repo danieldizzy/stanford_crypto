@@ -11,6 +11,14 @@ you.
 
 Reddit: https://www.reddit.com/r/Stanfordcrypto/
 
+## Setup
+
+```
+virtualenv venv
+source venv/bin/activate
+make init
+```
+
 ## Running the code
 
 Each assignment/project/whatever is a python module (file).  In some

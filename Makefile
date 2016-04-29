@@ -1,5 +1,8 @@
 .DEFAULT_GOAL := test
 
+init:
+	pip install -r requirements.txt
+
 test: clean
 	python -m unittest discover
 

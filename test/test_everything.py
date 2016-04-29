@@ -296,4 +296,7 @@ class Week_3(TestBase):
         self.assertEqual(w3b.rev_hash(msg, 2, hashfunc), expected)
 
     def test_bonus(self):
+        # Add check for
+        # wget https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=28 -O test.mp4
+        
         w3b.main()
