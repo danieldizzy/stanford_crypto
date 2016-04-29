@@ -279,11 +279,11 @@ class Test_AES(unittest.TestCase):
 
 class Week_3(TestBase):
 
-    def test_blockize(self):
-        self.assertEqual(w3b.blockize('hello', 2), ['he', 'll', 'o'])
-        self.assertEqual(w3b.blockize('hello', 10), ['hello'])
-        self.assertEqual(w3b.blockize('hello', 5), ['hello'])
-        self.assertEqual(w3b.blockize('hello', 1), ['h', 'e', 'l', 'l', 'o'])
+    def test_create_blocks(self):
+        self.assertEqual(w3b.create_blocks('hello', 2), ['he', 'll', 'o'])
+        self.assertEqual(w3b.create_blocks('hello', 10), ['hello'])
+        self.assertEqual(w3b.create_blocks('hello', 5), ['hello'])
+        self.assertEqual(w3b.create_blocks('hello', 1), ['h', 'e', 'l', 'l', 'o'])
 
     def test_rev_hash(self):
         def hashfunc(block):
