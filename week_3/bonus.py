@@ -74,11 +74,13 @@ def main(filename):
 #
 # Get the test files given in the assignment:
 #
-# sample file, with sha given
-# wget https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=28 -O test.mp4
-# then use that file as the arg:
-# python -m week_3.bonus test.mp4
-# to verify the sha.
+# sample file with the given sha:
+# $ wget https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=28 -O test.mp4
+# $ python -m week_3.bonus test.mp4
+#
+# Actual file:
+# $ wget https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=27 -O actual.mp4
+# $ python -m week_3.bonus actual.mp4
 
 if __name__ == '__main__':
     filename = sys.argv[1]
