@@ -7,6 +7,7 @@ from cStringIO import StringIO
 import sys
 import os
 import week_2.aes as aes
+import week_3.bonus as w3b
 
 class TestBase(unittest.TestCase):
 
@@ -275,3 +276,24 @@ class Test_AES(unittest.TestCase):
         # Final full key.
         self.assertEqual(round10, aes.expand_key(key, 10)[-1])
 
+
+class Week_3(TestBase):
+
+    def test_blockize(self):
+        self.assertEqual(w3b.blockize('hello', 2), ['he', 'll', 'o'])
+        self.assertEqual(w3b.blockize('hello', 10), ['hello'])
+        self.assertEqual(w3b.blockize('hello', 5), ['hello'])
+        self.assertEqual(w3b.blockize('hello', 1), ['h', 'e', 'l', 'l', 'o'])
+
+    def test_rev_hash(self):
+        def hashfunc(block):
+            return block
+
+        msg = 'abcde'
+        expected = (
+            'abcd', [ ['ab', 'cd'], ['cd', 'e'], ['e', ''] ]
+        )
+        self.assertEqual(w3b.rev_hash(msg, 2, hashfunc), expected)
+
+    def test_bonus(self):
+        w3b.main()
