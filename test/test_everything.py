@@ -319,9 +319,15 @@ class Week_3(TestBase):
         self.assertEqual(w3b.pycrypto_sha256('abc')[0:len(expected)], expected)
 
     def test_bonus(self):
-        # Add check for
-        # wget https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=28 -O test.mp4
-        
-        # w3b.main()
-        # TODO add test file
-        pass
+        # Have verified that the hash returned for the sample file
+        # https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=28
+        # is as expected:
+        # 03c08f4ee0b576fe319338139c045c89c3e8e9409633bea29442e21425006ea8
+        #
+        # That file is too big to commit to this repo, so using week_3_bonus_test.txt
+        # in this repo.
+        hsh = '2d4b54fabf8ed716fbb45d8e6a5844712934e7d4d353a814f738ad8c8142c54a'
+        p = os.path.dirname(os.path.realpath(__file__))
+        testfile = os.path.join(p, 'week_3_bonus_test.txt')
+        self.assertEqual(w3b.main(testfile), hsh)
+

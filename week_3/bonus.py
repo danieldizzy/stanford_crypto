@@ -67,12 +67,22 @@ def main(filename):
         data = bytearray(f.read())
     ret = rev_hash(data, 1024, pycrypto_sha256)
     h = ret[0]
-    print h
-    print '{0:x}'.format(h)
+    return int_array_to_hex_string(h)
+
+###################
+# Prep:
+#
+# Get the test files given in the assignment:
+#
+# sample file, with sha given
+# wget https://class.coursera.org/crypto-preview/lecture/download.mp4?lecture_id=28 -O test.mp4
+# then use that file as the arg:
+# python -m week_3.bonus test.mp4
+# to verify the sha.
 
 if __name__ == '__main__':
     filename = sys.argv[1]
     if filename is None:
         print 'filename required'
     else:
-        main(filename)
+        print main(filename)
