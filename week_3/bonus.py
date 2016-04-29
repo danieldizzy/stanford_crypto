@@ -11,7 +11,8 @@ from lib.helpers import *
 def pycrypto_sha256(message):
     hash = SHA256.new()
     hash.update(message)
-    return hash.digest()
+    s = hash.hexdigest()
+    return hexstring_to_int_array(s)
 
 def blockize(s, block_size):
     # consider a bytearray:
@@ -20,7 +21,7 @@ def blockize(s, block_size):
     # ba = bytearray(s)
     return map(lambda i: s[i:i+block_size], range(0, len(s), block_size))
 
-def rev_hash(s, block_size, hashfunc, debug = False):
+def rev_hash(s, block_size, hashfunc):
     if not isinstance(s, bytearray):
         raise ValueError('must be bytearray')
 
@@ -33,8 +34,7 @@ def rev_hash(s, block_size, hashfunc, debug = False):
     blocks.reverse()
     hashes = [None]
     for i in range(1, len(blocks)):
-        if debug:
-            print '  hashing block {0} of {1}'.format(i, len(blocks))
+        print '  hashing block {0} of {1}'.format(i, len(blocks))
         tmp = bytearray(blocks[i - 1])
         if hashes[-1] is not None:
             tmp.extend(hashes[-1])

@@ -286,7 +286,6 @@ class Week_3(TestBase):
         self.assertEqual(w3b.blockize('hello', 1), ['h', 'e', 'l', 'l', 'o'])
 
     def test_rev_hash(self):
-        self.p()
         def hashfunc(block):
             return block
 
@@ -296,6 +295,10 @@ class Week_3(TestBase):
             b('abcde'), [ (b('ab'), b('cde')), (b('cd'), b('e')), (b('e'), None) ]
         )
         self.assertEqual(w3b.rev_hash(msg, 2, hashfunc), expected)
+
+    def test_pycrypto_sha256(self):
+        expected = [0xba, 0x78, 0x16, 0xbf]  # Truncate the rest
+        self.assertEqual(w3b.pycrypto_sha256('abc')[0:len(expected)], expected)
 
     def test_bonus(self):
         # Add check for
