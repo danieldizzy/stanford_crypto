@@ -296,6 +296,15 @@ class Week_3(TestBase):
         )
         self.assertEqual(w3b.rev_hash(msg, 2, hashfunc), expected)
 
+    def test_rev_hash_single_block(self):
+        def hashfunc(block):
+            return block
+
+        msg = bytearray('abcde')
+        b = lambda x: bytearray(x)  # shorthand
+        expected = (b('abcde'), [(bytearray(b'abcde'), None)])
+        self.assertEqual(w3b.rev_hash(msg, 10, hashfunc), expected)
+
     def test_rev_hash_do_not_save_rest_of_data(self):
         def hashfunc(block):
             return block

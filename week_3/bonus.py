@@ -47,7 +47,9 @@ def rev_hash(s, block_size, hashfunc, save_all_block_hashes = True):
             hashes[0] = h
 
     tmp = bytearray(blocks[-1])
-    tmp.extend(hashes[-1])
+    h = hashes[-1]
+    if h is not None:
+        tmp.extend(h)
     hsh = hashfunc(tmp)
 
     if not save_all_block_hashes:
