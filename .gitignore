@@ -1,3 +1,6 @@
 *.pyc
 
 venv
+
+# Copying lecture transcripts locally for notes source.
+transcripts/
