@@ -134,7 +134,8 @@ def get_most_likely_char_ords():
     """Provide ords for guesses with likely candidates first.
     These are looped through in order for positional guesses,
     so no sense in wasting time on non-printing chars."""
-    ords = range(ord('a'), ord('z'))
+    ords = [9]
+    ords.extend(range(ord('a'), ord('z')))
     ords.extend(range(ord('A'), ord('Z')))
     ords.extend([i for i in range(32, 126) if i not in ords])
     ords.extend([i for i in range(0, 255) if i not in ords])
@@ -212,7 +213,7 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
 
 if __name__ == '__main__':
     po = PaddingOracle()
-    test = 'f20bdba6ff29eed7b046d1df9fb7000058b1ffb4210a580f748b4ac714c001bd'
-    msgbytes = decode(test, 128/8, po.query, 7)
+    # test = 'f20bdba6ff29eed7b046d1df9fb7000058b1ffb4210a580f748b4ac714c001bd'
+    msgbytes = decode(CIPHERTEXT, 128/8, po.query)
     print msgbytes
     print ''.join(map(chr, msgbytes))
