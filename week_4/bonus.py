@@ -26,6 +26,7 @@ class PaddingOracle(object):
             if e.code == 404:
                 return True # good padding
             return False # bad padding
+        return True  # Good padding (and no error!!)
 
 def get_pad(length):
     # [p] * p gives an array [p, p, p ...] of len p.
@@ -134,7 +135,7 @@ def get_most_likely_char_ords():
     """Provide ords for guesses with likely candidates first.
     These are looped through in order for positional guesses,
     so no sense in wasting time on non-printing chars."""
-    ords = [9, 32]  # 9 showed up a lot, 32 is space.
+    ords = [9, 32]  # 9 showed up a lot (padding?), 32 is space.
     ords.extend(range(ord('a'), ord('z') + 1))
     ords.extend(range(ord('A'), ord('Z') + 1))
     ords.extend([i for i in range(0, 256) if i not in ords])
@@ -167,25 +168,29 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
         xored = map(lambda x: x[0]^x[1], zip(msg_rev, ct))
         curr_block = pos/block_size
         chopped_ct = list(xored[(block_size * curr_block):])
-        # print xored
-        # print block_size
-        # print curr_block
-        # print chopped_ct
-
         padlen = (pos % block_size) + 1
-        # print 'padlen: {0}'.format(padlen)
         for i in range(0, padlen):
             chopped_ct[i] ^= padlen
 
-        # print chopped_ct
-
-        # prepend the prior block from the original ct
+        # prepend the prior block from the original (reverse) ct
+        # ... this becomes the ct for the message block we're
+        # currently hacking.
         prior_block = ct[(curr_block - 1)*block_size:(curr_block*block_size)]
         actual_base = list(prior_block)
         actual_base.extend(chopped_ct)
 
         # position within the block we're guessing
-        guess_pos = block_size + pos % block_size
+        guess_pos = block_size + (pos % block_size)
+
+        if pos == 24:
+            debug = """
+block_size:  {0}
+curr_block:  {1}
+pad_len:     {2}
+actual_base: {3}
+guess_pos:   {4}"""
+            print debug.format(block_size, curr_block, padlen, actual_base, guess_pos)
+
 
         found_match = False
         for guess in message_ord_code_candidates:
