@@ -31,6 +31,29 @@ def get_pad(length):
     # [p] * p gives an array [p, p, p ...] of len p.
     return reduce(lambda x, y: (x << 8) ^ y, [length] * length, 0)
 
+def get_blocked_decoded_message(msg, block_size):
+    """Breaks decoded message into blocks, building the blocks from last char.
+    eg, ('hello', 4) => ['h', 'ello']
+    """
+    mr = msg[::-1]
+    mrparts = [mr[i:i + block_size] for i in range(0, len(mr), block_size)]
+    mrparts = map(lambda x: ''.join(reversed(x)), mrparts)
+    mrparts.reverse()
+    return mrparts
+    
+def get_message_block_remainder(msg, block_size, total_blocks, current_block, current_block_position):
+    char_count = block_size - current_block_position - 1
+    assert(0 <= char_count and char_count < block_size)
+
+    if char_count == 0: return None
+
+    mb = get_blocked_decoded_message(msg, block_size)
+    mb.reverse()
+    i = total_blocks - current_block - 1
+    m = mb[i]
+    return m[(-1 * char_count):]
+
+
 def get_modified_ciphertext(ct, block_size, current_block, current_position, guess, decoded):
     assert(isinstance(ct, str))
     assert((len(ct) % block_size) == 0)

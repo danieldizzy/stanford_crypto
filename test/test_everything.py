@@ -340,6 +340,33 @@ class Week_4(TestBase):
         self.assertEqual(0x0202, w4b.get_pad(2))
         self.assertEqual(0x07070707070707, w4b.get_pad(7))
 
+    def test_get_blocked_decoded_message(self):
+        def t(s): return w4b.get_blocked_decoded_message(s, 4)
+        test_cases = [
+            ['re', ['re']],
+            ['hello', ['h', 'ello']]
+        ]
+        for case, expected in test_cases:
+            self.assertEqual(t(case), expected)
+        
+    def test_get_message_block_remainder(self):
+        def f(msg, current_block, current_block_position, expected):
+            block_size = 4 # bytes
+            total_blocks = len(msg) / block_size
+            actual = w4b.get_message_block_remainder(
+                msg, block_size, total_blocks, current_block, current_block_position
+            )
+            self.assertEqual(actual, expected)
+        f('hello_there!', 2, 3, None)
+        f('hello_there!', 2, 2, '!')
+        f('hello_there!', 2, 1, 'e!')
+        f('hello_there!', 2, 0, 're!')
+        f('hello_there!', 1, 3, None)
+        f('hello_there!', 1, 2, 'h')
+        f('hello_there!', 1, 1, 'th')
+        f('hello_there!', 1, 0, '_th')
+
+    @unittest.skip('baoeu')
     def test_get_modified_ciphertext(self):
         """Given ciphertext, modify it at a certain block and position."""
         block_size = 2  # bytes
