@@ -134,11 +134,10 @@ def get_most_likely_char_ords():
     """Provide ords for guesses with likely candidates first.
     These are looped through in order for positional guesses,
     so no sense in wasting time on non-printing chars."""
-    ords = [9]
-    ords.extend(range(ord('a'), ord('z')))
-    ords.extend(range(ord('A'), ord('Z')))
-    ords.extend([i for i in range(32, 126) if i not in ords])
-    ords.extend([i for i in range(0, 255) if i not in ords])
+    ords = [9, 32]  # 9 showed up a lot, 32 is space.
+    ords.extend(range(ord('a'), ord('z') + 1))
+    ords.extend(range(ord('A'), ord('Z') + 1))
+    ords.extend([i for i in range(0, 256) if i not in ords])
     return ords
 
 
@@ -213,7 +212,12 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
 
 if __name__ == '__main__':
     po = PaddingOracle()
-    # test = 'f20bdba6ff29eed7b046d1df9fb7000058b1ffb4210a580f748b4ac714c001bd'
-    msgbytes = decode(CIPHERTEXT, 128/8, po.query)
+    # m = CIPHERTEXT
+    m =  'f20bdba6ff29eed7b046d1df9fb70000'
+    m += '58b1ffb4210a580f748b4ac714c001bd'
+    m += '4a61044426fb515dad3f21f18aa577c0'
+    m += 'bdf302936266926ff37dbf7035d5eeb4'
+    
+    msgbytes = decode(m, 128/8, po.query)
     print msgbytes
     print ''.join(map(chr, msgbytes))
