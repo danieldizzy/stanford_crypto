@@ -331,3 +331,8 @@ class Week_3(TestBase):
         testfile = os.path.join(p, 'week_3_bonus_test.txt')
         self.assertEqual(w3b.main(testfile), hsh)
 
+
+class Week_4(TestBase):
+
+    def test_blah(self):
+        self.assertEqual(1, 2)
