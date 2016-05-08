@@ -124,7 +124,22 @@ def main():
             break
     
 
+def print_current_message(msg_rev):
+    msg = list(msg_rev)
+    msg.reverse()
+    print ''.join(map(chr, msg))
+
+
 def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
+
+    # Convert to byte array, reverse it, starting at the beginning.
+    # To check a position, xor it with the rev. of the message decoded
+    # thus far, chop off any blocks at the start, xor the first few
+    # positions with the pad as needed.  This is the base.  xor the
+    # current pos with the guess, reverse, and check.  If successful,
+    # set the message to this.
+    
+
     DPB = 2  # digits per byte
     css = [ciphertext_string[i:i + DPB] for i in range(0, len(ciphertext_string), DPB)]
     ct = map(lambda x: int(x, 16), css)
@@ -135,21 +150,21 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
 
     ubound = block_size + min(max_iterations, len(msg_rev))
     for pos in range(block_size, ubound):
-        print 'calc at position {0}'.format(pos)
+        # print 'calc at position {0}'.format(pos)
         xored = map(lambda x: x[0]^x[1], zip(msg_rev, ct))
         curr_block = pos/block_size
         chopped_ct = list(xored[(block_size * curr_block):])
-        print xored
-        print block_size
-        print curr_block
-        print chopped_ct
+        # print xored
+        # print block_size
+        # print curr_block
+        # print chopped_ct
 
         padlen = (pos % block_size) + 1
-        print 'padlen: {0}'.format(padlen)
+        # print 'padlen: {0}'.format(padlen)
         for i in range(0, padlen):
             chopped_ct[i] ^= padlen
 
-        print chopped_ct
+        # print chopped_ct
 
         # prepend the prior block from the original ct
         prior_block = ct[(curr_block - 1)*block_size:(curr_block*block_size)]
@@ -165,13 +180,13 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
             attempt[guess_pos] ^= guess
             attempt.reverse()
             attempt = ''.join(map(lambda x: hex(x)[2:].zfill(2), attempt))
-            print 'guessing {0} => {1}'.format(guess, attempt)
+            print 'guess {0} for position {1}'.format(guess, pos)
 
             if oracle(attempt):
                 found_match = True
                 msg_rev[pos] = guess
-                print 'MATCH!'
-                print msg_rev
+                # print 'MATCH!'
+                print_current_message(msg_rev)
                 break
         
         if not found_match:
@@ -180,13 +195,6 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
     msg_rev.reverse()
     return msg_rev
 
-    # Convert to byte array, reverse it, starting at the beginning.
-    # To check a position, xor it with the rev. of the message decoded
-    # thus far, chop off any blocks at the start, xor the first few
-    # positions with the pad as needed.  This is the base.  xor the
-    # current pos with the guess, reverse, and check.  If successful,
-    # set the message to this.
-    
 ###################
 
 if __name__ == '__main__':
