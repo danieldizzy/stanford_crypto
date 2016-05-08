@@ -87,23 +87,20 @@ def decode(ciphertext_string, block_size, oracle):
     msg_rev = [0] * len(ct)
 
     message_ord_code_candidates = get_most_likely_char_ords()
-    
-    # ubound = block_size + min(max_iterations, len(msg_rev))
+
     for pos in range(block_size, len(msg_rev)):
-        # print 'calc at position {0}'.format(pos)
-        xored = map(lambda x: x[0]^x[1], zip(msg_rev, ct))
-        curr_block = pos/block_size
-        chopped_ct = list(xored[(block_size * curr_block):])
+        curr_block = pos/block_size  # indexed from 0
+
+        working_block = map(lambda x: x[0]^x[1], zip(msg_rev, ct))
+        working_block = list(working_block[(block_size * curr_block):])
         padlen = (pos % block_size) + 1
         for i in range(0, padlen):
-            chopped_ct[i] ^= padlen
+            working_block[i] ^= padlen
 
-        # prepend the prior block from the original (reverse) ct
-        # ... this becomes the ct for the message block we're
-        # currently hacking.
-        prior_block = ct[(curr_block - 1)*block_size:(curr_block*block_size)]
-        actual_base = list(prior_block)
-        actual_base.extend(chopped_ct)
+        # prepend the as-is block from the original (reverse) ct
+        as_is_block = ct[(curr_block - 1)*block_size:(curr_block*block_size)]
+        actual_base = list(as_is_block)
+        actual_base.extend(working_block)
 
         # position within the block we're guessing
         guess_pos = block_size + (pos % block_size)
@@ -119,10 +116,9 @@ def decode(ciphertext_string, block_size, oracle):
             if oracle(attempt):
                 found_match = True
                 msg_rev[pos] = guess
-                # print 'MATCH!'
                 print_current_message(msg_rev)
                 break
-        
+
         if not found_match:
             raise ValueError('No match found at position {0}'.format(pos))
 
@@ -132,13 +128,15 @@ def decode(ciphertext_string, block_size, oracle):
 ###################
 
 if __name__ == '__main__':
-    po = PaddingOracle()
-    # m = CIPHERTEXT
+
+    # The full ciphertext:
     m =  'f20bdba6ff29eed7b046d1df9fb70000'
     m += '58b1ffb4210a580f748b4ac714c001bd'
     m += '4a61044426fb515dad3f21f18aa577c0'
     m += 'bdf302936266926ff37dbf7035d5eeb4'
-    
+
+    po = PaddingOracle()
     msgbytes = decode(m, 128/8, po.query)
+
     print msgbytes
     print ''.join(map(chr, msgbytes))
