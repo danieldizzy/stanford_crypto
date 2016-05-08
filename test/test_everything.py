@@ -366,7 +366,7 @@ class Week_4(TestBase):
         f('hello_there!', 1, 1, 'th')
         f('hello_there!', 1, 0, '_th')
 
-    @unittest.skip('baoeu')
+    # @unittest.skip('baoeu')
     def test_get_modified_ciphertext(self):
         """Given ciphertext, modify it at a certain block and position."""
         block_size = 2  # bytes
