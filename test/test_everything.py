@@ -8,6 +8,7 @@ import sys
 import os
 import week_2.aes as aes
 import week_3.bonus as w3b
+import week_4.bonus as w4b
 
 class TestBase(unittest.TestCase):
 

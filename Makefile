@@ -25,5 +25,7 @@ runall: test
 	python -m week_2.bonus
 	echo '----------------------------------'
 	python -m week_3.bonus test/week_3_bonus_test.txt
+	echo '----------------------------------'
+	python -m week_4.bonus
 
 .PHONY: test clean
