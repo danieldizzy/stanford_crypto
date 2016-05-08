@@ -130,6 +130,17 @@ def print_current_message(msg_rev):
     print ''.join(map(chr, msg))
 
 
+def get_most_likely_char_ords():
+    """Provide ords for guesses with likely candidates first.
+    These are looped through in order for positional guesses,
+    so no sense in wasting time on non-printing chars."""
+    ords = range(ord('a'), ord('z'))
+    ords.extend(range(ord('A'), ord('Z')))
+    ords.extend([i for i in range(32, 126) if i not in ords])
+    ords.extend([i for i in range(0, 255) if i not in ords])
+    return ords
+
+
 def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
 
     # Convert to byte array, reverse it, starting at the beginning.
@@ -148,6 +159,8 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
     num_blocks = len(ct)/block_size
     msg_rev = [0] * len(ct)
 
+    message_ord_code_candidates = get_most_likely_char_ords()
+    
     ubound = block_size + min(max_iterations, len(msg_rev))
     for pos in range(block_size, ubound):
         # print 'calc at position {0}'.format(pos)
@@ -175,7 +188,7 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
         guess_pos = block_size + pos % block_size
 
         found_match = False
-        for guess in range(0, 255):
+        for guess in message_ord_code_candidates:
             attempt = list(actual_base)
             attempt[guess_pos] ^= guess
             attempt.reverse()
@@ -198,7 +211,6 @@ def decode(ciphertext_string, block_size, oracle, max_iterations = 1000):
 ###################
 
 if __name__ == '__main__':
-    # main()
     po = PaddingOracle()
     test = 'f20bdba6ff29eed7b046d1df9fb7000058b1ffb4210a580f748b4ac714c001bd'
     msgbytes = decode(test, 128/8, po.query, 7)
