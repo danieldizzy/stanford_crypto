@@ -34,11 +34,24 @@ def main():
     sz = 128 / 4  # Each char is a hex digit, 4 bits.  128-bit block.
     parts = [CIPHERTEXT[i:i+sz] for i in range(0, len(CIPHERTEXT), sz)]
     IV = parts[0]
-    m = parts[1:]
+    ct_parts = parts[1:]
     print parts
     print IV
-    print m
-    print 'hello'
+    print ct_parts
+
+    iv_hex = int(IV, 16)
+
+    print 'getting last byte of m[0]:'
+    for i in range(0, 255):
+        # print i
+        iv_prime = '{0:x}'.format(iv_hex ^ 0x01 ^ i)
+        test_ct = ''.join([iv_prime, ct_parts[0]])
+        # print test_ct
+        ret = po.query(test_ct)
+        if ret:
+            print 'last byte value = {0}, char = "{1}"'.format(i, chr(i))
+            break
+
 
 ###################
 
