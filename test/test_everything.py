@@ -8,6 +8,7 @@ import sys
 import os
 import week_2.aes as aes
 import week_3.bonus as w3b
+import week_4.bonus as w4b
 
 class TestBase(unittest.TestCase):
 
@@ -334,5 +335,19 @@ class Week_3(TestBase):
 
 class Week_4(TestBase):
 
-    def test_blah(self):
-        self.assertEqual(1, 2)
+    def test_get_pad(self):
+        self.assertEqual(0x01, w4b.get_pad(1))
+        self.assertEqual(0x0202, w4b.get_pad(2))
+        self.assertEqual(0x07070707070707, w4b.get_pad(7))
+
+    def test_get_modified_ciphertext(self):
+        """Given ciphertext, modify it at a certain block and position."""
+        block_size = 2  # bytes
+        ct = '00000000'  # 2 blocks of 2 bytes each
+        current_block = 0
+        current_position = 1
+        guess = 0xff
+        decoded = ''
+
+        modified = w4b.get_modified_ciphertext(ct, block_size, current_block, current_position, guess, decoded)
+        self.assertEqual(modified, '{0:x}'.format(0x00000 ^ 0x00ff ^ 0x0001))
