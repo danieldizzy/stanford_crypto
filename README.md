@@ -13,6 +13,13 @@ Reddit: https://www.reddit.com/r/Stanfordcrypto/
 
 ## Setup
 
+OSX setup for gmpy2, per http://stackoverflow.com/questions/23187801/
+
+```
+brew install libmpc
+brew install mpfr
+```
+
 ```
 virtualenv venv
 source venv/bin/activate
